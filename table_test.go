@@ -117,7 +117,7 @@ func TestTableToString(t *testing.T) {
 	assert.Nil(err)
 	assert.Equal(2, len(table.rows))
 
-	expected := "one      two      three\nfour     five     six  "
+	expected := "one     two     three\nfour    five    six  "
 	actual := table.ToString()
 	assert.Equal(expected, actual)
 }

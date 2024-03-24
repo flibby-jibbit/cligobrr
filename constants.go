@@ -26,7 +26,7 @@ const (
 	msgTableRowIncorrectCols  = "Table row must contain %d columns."
 
 	// Tables
-	tablePadDefault = uint8(5)
+	tablePadDefault = uint8(4)
 
 	// Tests
 	testAppName    string = "myApp"

@@ -91,8 +91,6 @@ func helpAllArgs(name string, args []IArg) {
 	output := []string{
 		"Arguments:",
 		"",
-		fmt.Sprintf("`%s help arg` for more information.", name),
-		"",
 	}
 
 	tableFields := TableFields{
@@ -108,12 +106,17 @@ func helpAllArgs(name string, args []IArg) {
 	}
 
 	output = append(output, table.ToString())
+	output = append(output, "")
+	output = append(output, fmt.Sprintf("`%s help arg` for more information.", name))
 	fmt.Println(strings.Join(output, "\n"))
 	fmt.Println("")
 }
 
 func helpCmds(cmds []Cmd) {
-	output := []string{"Commands:", ""}
+	output := []string{
+		"Commands:",
+		"",
+	}
 
 	tableFields := TableFields{
 		Cols: 3,
@@ -123,10 +126,29 @@ func helpCmds(cmds []Cmd) {
 	table.Add([]string{"Name", "Alias", "Description"})
 	table.Add([]string{"----", "-----", "-----------"})
 
+	hasDefault := false
+
 	for _, cmd := range cmds {
-		table.Add([]string{cmd.Name, cmd.Alias, cmd.Description})
+		name := cmd.Name
+
+		if cmd.Default {
+			name = fmt.Sprintf("%s*", name)
+			hasDefault = true
+		}
+
+		table.Add([]string{
+			name,
+			cmd.Alias,
+			cmd.Description,
+		})
 	}
 
 	output = append(output, table.ToString())
+
+	if hasDefault {
+		output = append(output, "")
+		output = append(output, "* indicates default command")
+	}
+
 	fmt.Println(strings.Join(output, "\n"))
 }
