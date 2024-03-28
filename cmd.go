@@ -114,7 +114,14 @@ func (self *Cmd) Parse(args []string) (*Cmd, error) {
 				return cmd, nil
 			}
 		} else {
-			return nil, errUnexpectedCmd(token)
+			// Didn't find a command, so assume
+			// input is args for self.
+			err := self.Args.Parse(args)
+			if err != nil {
+				return nil, err
+			}
+
+			return self, nil
 		}
 	}
 
