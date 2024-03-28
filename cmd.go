@@ -127,7 +127,7 @@ func (self *Cmd) Parse(args []string) (*Cmd, error) {
 		}
 	}
 
-	if self.Exec == nil {
+	if self.Exec == nil && self.ExecWithArgs == nil {
 		// If there is nothing to execute, we need to see if
 		// there is a default command.
 
