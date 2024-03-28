@@ -7,10 +7,11 @@ func TestCmdNew(t *testing.T) {
 	assert := assert.New(t)
 
 	fields := CmdFields{
-		Name:        testCmdName,
-		Alias:       testCmdAlias,
-		Description: testCmdDesc,
-		Exec:        testCmdExec,
+		Name:         testCmdName,
+		Alias:        testCmdAlias,
+		Description:  testCmdDesc,
+		Exec:         testCmdExec,
+		ExecWithArgs: testCmdExecWithArgs,
 	}
 
 	cmd, err := CmdNew(fields)
@@ -18,6 +19,7 @@ func TestCmdNew(t *testing.T) {
 	assert.Equal(testCmdAlias, cmd.Alias)
 	assert.Equal(testCmdDesc, cmd.Description)
 	assert.NotNil(cmd.Exec)
+	assert.NotNil(cmd.ExecWithArgs)
 	assert.Nil(err)
 }
 
@@ -33,6 +35,7 @@ func TestCmdNewWithDefaults(t *testing.T) {
 	assert.Empty(cmd.Alias)
 	assert.Empty(cmd.Description)
 	assert.Nil(cmd.Exec)
+	assert.Nil(cmd.ExecWithArgs)
 	assert.Nil(err)
 }
 

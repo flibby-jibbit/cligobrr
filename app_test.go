@@ -65,9 +65,10 @@ func TestAppParse(t *testing.T) {
 	app := AppNew(appFields)
 
 	cmdFields := CmdFields{
-		Name:  testCmdName,
-		Alias: testCmdAlias,
-		Exec:  testCmdExec,
+		Name:         testCmdName,
+		Alias:        testCmdAlias,
+		Exec:         testCmdExec,
+		ExecWithArgs: testCmdExecWithArgs,
 	}
 
 	cmd, err := CmdNew(cmdFields)

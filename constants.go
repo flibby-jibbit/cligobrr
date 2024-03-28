@@ -48,5 +48,8 @@ func falseyValues() []string {
 }
 
 // For tests.
-func testCmdExec(args Args) {
+func testCmdExecWithArgs(args Args) {
+}
+
+func testCmdExec() {
 }

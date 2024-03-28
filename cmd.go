@@ -3,14 +3,16 @@ package cligobrr
 import "fmt"
 import "strings"
 
-type FuncCmdExec func(args Args)
+type FuncCmdExec func()
+type FuncCmdExecWithArgs func(args Args)
 
 type CmdFields struct {
-	Name        string
-	Alias       string
-	Description string
-	Default     bool
-	Exec        FuncCmdExec
+	Name         string
+	Alias        string
+	Description  string
+	Default      bool
+	Exec         FuncCmdExec
+	ExecWithArgs FuncCmdExecWithArgs
 }
 
 type Cmd struct {
