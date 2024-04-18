@@ -35,6 +35,9 @@ const (
 	testCmdName    string = "myCmd"
 	testCmdAlias   string = "mc"
 	testCmdDesc    string = "My Command"
+	testArgName    string = "myArg"
+	testArgAlias   string = "ma"
+	testArgDesc    string = "My Argument"
 )
 
 // Golang doesn't allow complex types as constants, so this is

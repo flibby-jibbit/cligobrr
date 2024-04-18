@@ -12,6 +12,7 @@ type AppFields struct {
 type App struct {
 	AppFields
 	Cmds Cmds
+	Args Args
 }
 
 func AppNew(fields AppFields) *App {
@@ -40,67 +41,103 @@ func AppNew(fields AppFields) *App {
 	return &app
 }
 
-func (self *App) Parse(args []string) (*Cmd, error) {
+func (self *App) Parse(input []string) (*Cmd, error) {
 	// Remove the app name.
-	args = args[1:]
+	input = input[1:]
 
 	// Could need this in a couple of places, so let's
 	// just grab it now.
 	defCmd := self.Cmds.defaultCmd()
 
-	// Parse the CLI input and return the command
+	if len(input) == 0 {
+		// There was no input on the CLI. If there is a
+		// default command, return it. Otherwise, help.
+		if defCmd != nil {
+			return defCmd, nil
+		}
+
+		appHelp(self, []string{})
+		return self.Cmds.get("help"), nil
+	}
+
+	// There is input, so parse it and return the command
 	// that needs to be executed.
 
+	// Look for global (app) args first.
+	var args []string
+
+	for _, token := range input {
+		if !strings.Contains(token, "=") {
+			break
+		}
+
+		// Remove the token so it doesn't get reprocessed.
+		input = input[1:]
+		args = append(args, token)
+	}
+
 	if len(args) > 0 {
-		token := args[0]
+		err := self.Args.Parse(args)
+		if err != nil {
+			return nil, err
+		}
+	}
 
-		cmd := self.Cmds.get(token)
-		if cmd != nil {
-			args = args[1:]
+	if len(input) == 0 {
+		// There is no input remaining. If there is a
+		// default command, return it. Otherwise, help.
+		if defCmd != nil {
+			return defCmd, nil
+		}
 
-			if cmd.Name == "help" {
-				appHelp(self)
+		appHelp(self, []string{})
+		return self.Cmds.get("help"), nil
+	}
+
+	// Input remains.
+	token := input[0]
+
+	cmd := self.Cmds.get(token)
+	if cmd != nil {
+		input = input[1:]
+
+		if cmd.Name == "help" {
+			err := appHelp(self, input)
+			if err != nil {
+				return nil, err
+			} else {
 				return cmd, nil
 			}
+		}
 
-			if cmd.Name == "version" {
-				self.version()
-				return cmd, nil
-			}
+		if cmd.Name == "version" {
+			self.version()
+			return cmd, nil
+		}
 
-			// Some other commmand.
-			cmd, err := cmd.Parse(args)
+		// Some other commmand.
+		cmd, err := cmd.Parse(input)
+		if err != nil {
+			return nil, err
+		} else {
+			return cmd, nil
+		}
+	} else {
+		// No command matching token. If there is a default command,
+		// let's assume the input is args for that.
+		if defCmd != nil {
+			cmd, err := defCmd.Parse(input)
 			if err != nil {
 				return nil, err
 			} else {
 				return cmd, nil
 			}
 		} else {
-			// No command matching token. If there is a default command,
-			// let's assume the input is args for that.
-			if defCmd != nil {
-				cmd, err := defCmd.Parse(args)
-				if err != nil {
-					return nil, err
-				} else {
-					return cmd, nil
-				}
-			} else {
-				// No default command, so let's say we don't know what
-				// to do with the input.
-				return nil, errUnexpectedCmd(token)
-			}
+			// No default command, so let's say we don't know what
+			// to do with the input.
+			return nil, errUnexpectedCmd(token)
 		}
 	}
-
-	// There was no input on the CLI. If there is a default command, return it.
-	// Otherwise, help.
-	if defCmd != nil {
-		return defCmd, nil
-	}
-
-	appHelp(self)
-	return self.Cmds.get("help"), nil
 }
 
 func (self *App) version() {

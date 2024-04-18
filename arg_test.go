@@ -53,6 +53,21 @@ func TestArgNewCleanup(t *testing.T) {
 	assert.Equal([]string{"one", "two", "three"}, arg.GetChoices())
 }
 
+func TestArgWithChoicesHasSeparator(t *testing.T) {
+	assert := assert.New(t)
+
+	fields := ArgFields{
+		Name:     "arg",
+		Default:  "two",
+		Multiple: false,
+		Choices:  []string{"one", "two", "three"},
+	}
+
+	arg, err := argNew(fields)
+	assert.Nil(err)
+	assert.Equal(separatorDefault, arg.GetSeparator())
+}
+
 func TestArgNewNoName(t *testing.T) {
 	assert := assert.New(t)
 

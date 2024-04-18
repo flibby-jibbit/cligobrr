@@ -69,7 +69,7 @@ func argNew(fields ArgFields) (*Arg, error) {
 		fields.Choices = choices
 	}
 
-	if fields.Multiple {
+	if fields.Multiple || len(fields.Choices) > 0 {
 		if len(fields.Separator) == 0 {
 			fields.Separator = separatorDefault
 		}

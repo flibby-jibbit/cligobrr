@@ -1,5 +1,6 @@
 package cligobrr
 
+import "fmt"
 import "testing"
 import "github.com/stretchr/testify/assert"
 
@@ -55,7 +56,51 @@ func TestAppNewAddsVersion(t *testing.T) {
 	assert.Nil(app.Cmds.get("v"))
 }
 
-func TestAppParse(t *testing.T) {
+func TestAppParseArg(t *testing.T) {
+	assert := assert.New(t)
+
+	appFields := AppFields{
+		Name: testAppName,
+	}
+
+	app := AppNew(appFields)
+
+	argFields := ArgFields{
+		Name:        testArgName,
+		Alias:       testArgAlias,
+		Description: testArgDesc,
+	}
+
+	arg, err := StringArgNew(argFields)
+	assert.NotNil(arg)
+	assert.Nil(err)
+
+	app.Args.Add(arg)
+
+	// Parse by name.
+	argFragment := fmt.Sprintf("%s=val", arg.GetName())
+	cmdToExec, err := app.Parse([]string{testAppName, argFragment})
+	assert.NotNil(cmdToExec)
+	assert.Nil(err)
+	assert.Equal("help", cmdToExec.Name)
+
+	argVal, err := app.Args.AsString(arg.GetName())
+	assert.Nil(err)
+	assert.Equal("val", argVal)
+
+	// Parse by alias.
+	argFragment = fmt.Sprintf("%s=val", arg.GetAlias())
+	cmdToExec, err = app.Parse([]string{testAppName, argFragment})
+	assert.NotNil(cmdToExec)
+	assert.Nil(err)
+	assert.Equal("help", cmdToExec.Name)
+
+	argVal, err = app.Args.AsString(arg.GetAlias())
+	assert.Nil(err)
+	assert.Equal("val", argVal)
+}
+
+func TestAppParseCommand(t *testing.T) {
 	assert := assert.New(t)
 
 	appFields := AppFields{

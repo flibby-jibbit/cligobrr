@@ -4,31 +4,52 @@ import "fmt"
 import "strings"
 import "strconv"
 
-func appHelp(app *App) {
-	helpHeader(app.Name, app.Description)
-	helpCmds(app.Cmds.cmds)
+func appHelp(app *App, input []string) error {
+	return help(
+		app.Name,
+		app.Description,
+		app.Cmds,
+		app.Args,
+		input,
+	)
 }
 
-func cmdHelp(cmd *Cmd, args []string) error {
-	helpHeader(cmd.Name, cmd.Description)
+func cmdHelp(cmd *Cmd, input []string) error {
+	return help(
+		cmd.Name,
+		cmd.Description,
+		cmd.Cmds,
+		cmd.Args,
+		input,
+	)
+}
 
-	if len(args) > 0 {
-		token := args[0]
-		arg := cmd.Args.get(token)
+func help(
+	name string,
+	description string,
+	commands Cmds,
+	arguments Args,
+	input []string,
+) error {
+	helpHeader(name, description)
+
+	if len(input) > 0 {
+		token := input[0]
+		arg := arguments.get(token)
 		if arg == nil {
 			return errUnexpectedArg(token)
 		}
 
-		helpUsage(cmd.Name, []IArg{*arg})
+		helpUsage(name, []IArg{*arg})
 		helpSingleArg(*arg)
 	} else {
-		args := cmd.Args.args
+		args := arguments.args
 		if len(args) > 0 {
-			helpUsage(cmd.Name, args)
-			helpAllArgs(cmd.Name, args)
+			helpUsage(name, args)
+			helpAllArgs(name, args)
 		}
 
-		helpCmds(cmd.Cmds.cmds)
+		helpCmds(commands.cmds)
 	}
 
 	return nil
